@@ -96,7 +96,6 @@
 
 #include "kx10_defs.h"
 #include "sim_timer.h"
-#include <time.h>
 
 #define HIST_PC         0x40000000
 #define HIST_PC2        0x80000000
@@ -574,7 +573,7 @@ MTAB cpu_mod[] = {
 DEBTAB              cpu_debug[] = {
     {"IRQ", DEBUG_IRQ, "Debug IRQ requests"},
     {"CONI", DEBUG_CONI, "Show coni instructions"},
-    {"CONO", DEBUG_CONO, "Show coni instructions"},
+    {"CONO", DEBUG_CONO, "Show cono instructions"},
     {"DATAIO", DEBUG_DATAIO, "Show datai and datao instructions"},
     {0, 0}
 };
