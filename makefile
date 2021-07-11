@@ -350,9 +350,14 @@ ifeq (${WIN32},)  #*nix Environments (&& cygwin)
         LIBPATH += /opt/local/lib
         OS_LDFLAGS += -L/opt/local/lib
       endif
-      ifeq (HomeBrew,$(shell if ${TEST} -d /usr/local/Cellar; then echo HomeBrew; fi))
-        INCPATH += $(foreach dir,$(wildcard /usr/local/Cellar/*/*),$(dir)/include)
-        LIBPATH += $(foreach dir,$(wildcard /usr/local/Cellar/*/*),$(dir)/lib)
+      ifeq (HomeBrew,$(or $(shell if ${TEST} -d /usr/local/Cellar; then echo HomeBrew; fi),$(shell if ${TEST} -d /opt/homebrew/Cellar; then echo HomeBrew; fi)))
+        ifeq (local,$(shell if $(TEST) -d /usr/local/Cellar; then echo local; fi))
+          HBPATH = /usr/local
+        else
+          HBPATH = /opt/homebrew
+        endif
+        INCPATH += $(foreach dir,$(wildcard $(HBPATH)/Cellar/*/*),$(realpath $(dir)/include))
+        LIBPATH += $(foreach dir,$(wildcard $(HBPATH)/Cellar/*/*),$(realpath $(dir)/lib))
       endif
     else
       ifeq (Linux,$(OSTYPE))
@@ -487,6 +492,8 @@ ifeq (${WIN32},)  #*nix Environments (&& cygwin)
         LIBPATH += /usr/lib/
       endif
     endif
+    export CPATH = $(subst $() $(),:,$(INCPATH))
+    export LIBRARY_PATH = $(subst $() $(),:,$(LIBPATH))
     # Some gcc versions don't support LTO, so only use LTO when the compiler is known to support it
     ifeq (,$(NO_LTO))
       ifneq (,$(GCC_VERSION))
